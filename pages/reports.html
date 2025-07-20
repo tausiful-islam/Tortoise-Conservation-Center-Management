@@ -18,6 +18,11 @@
     .filter-bar {
       margin-bottom: 20px;
     }
+    .chart-container {
+      position: relative;
+      max-width: 100%;
+      height: 300px;
+    }
   </style>
 </head>
 <body>
@@ -28,6 +33,9 @@
       <i class="bi bi-arrow-left-circle"></i> Dashboard
     </a>
     <h3 class="text-success mb-0"><i class="bi bi-graph-up"></i> Reports</h3>
+    <button class="btn btn-danger" onclick="downloadPDF()">
+      <i class="bi bi-download"></i> Download PDF
+    </button>
   </div>
 
   <!-- Filters -->
@@ -54,53 +62,65 @@
   </div>
 
   <!-- Charts -->
-  <div class="row g-4">
+  <div class="row g-4" id="reportContent">
     <div class="col-lg-6 col-md-12">
       <div class="card p-3">
         <h5 class="card-title text-success">Tortoise Population by Species</h5>
-        <canvas id="speciesChart" height="300"></canvas>
+        <div class="chart-container">
+          <canvas id="speciesChart"></canvas>
+        </div>
       </div>
     </div>
 
     <div class="col-lg-6 col-md-12">
       <div class="card p-3">
         <h5 class="card-title text-success">Breeding Success Rate</h5>
-        <canvas id="breedingChart" height="300"></canvas>
+        <div class="chart-container">
+          <canvas id="breedingChart"></canvas>
+        </div>
       </div>
     </div>
 
     <div class="col-lg-6 col-md-12">
       <div class="card p-3">
         <h5 class="card-title text-success">Feeding Log Overview</h5>
-        <canvas id="feedingChart" height="300"></canvas>
+        <div class="chart-container">
+          <canvas id="feedingChart"></canvas>
+        </div>
       </div>
     </div>
 
     <div class="col-lg-6 col-md-12">
       <div class="card p-3">
         <h5 class="card-title text-success">Health Issues Summary</h5>
-        <canvas id="healthChart" height="300"></canvas>
+        <div class="chart-container">
+          <canvas id="healthChart"></canvas>
+        </div>
       </div>
     </div>
 
     <div class="col-lg-6 col-md-12">
       <div class="card p-3">
         <h5 class="card-title text-success">Staff Task Completion</h5>
-        <canvas id="staffChart" height="300"></canvas>
+        <div class="chart-container">
+          <canvas id="staffChart"></canvas>
+        </div>
       </div>
     </div>
 
     <div class="col-lg-6 col-md-12">
       <div class="card p-3">
         <h5 class="card-title text-success">Environmental Condition Trends</h5>
-        <canvas id="environmentChart" height="300"></canvas>
+        <div class="chart-container">
+          <canvas id="environmentChart"></canvas>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
+<!-- Chart Data & Script -->
 <script>
-  // Sample data for demonstration
   const speciesData = {
     labels: ['Species A', 'Species B', 'Species C', 'Species D'],
     datasets: [{
@@ -167,58 +187,33 @@
     }]
   };
 
-  // Create charts
-  const ctxSpecies = document.getElementById('speciesChart').getContext('2d');
-  const speciesChart = new Chart(ctxSpecies, {
-    type: 'bar',
-    data: speciesData,
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { display: false }
-      }
-    }
-  });
+  // Chart creation
+  new Chart(document.getElementById('speciesChart'), { type: 'bar', data: speciesData, options: { responsive: true, plugins: { legend: { display: false }}}});
+  new Chart(document.getElementById('breedingChart'), { type: 'pie', data: breedingData, options: { responsive: true }});
+  new Chart(document.getElementById('feedingChart'), { type: 'line', data: feedingData, options: { responsive: true }});
+  new Chart(document.getElementById('healthChart'), { type: 'doughnut', data: healthData, options: { responsive: true }});
+  new Chart(document.getElementById('staffChart'), { type: 'pie', data: staffData, options: { responsive: true }});
+  new Chart(document.getElementById('environmentChart'), { type: 'line', data: environmentData, options: { responsive: true }});
 
-  const ctxBreeding = document.getElementById('breedingChart').getContext('2d');
-  const breedingChart = new Chart(ctxBreeding, {
-    type: 'pie',
-    data: breedingData,
-    options: { responsive: true }
-  });
-
-  const ctxFeeding = document.getElementById('feedingChart').getContext('2d');
-  const feedingChart = new Chart(ctxFeeding, {
-    type: 'line',
-    data: feedingData,
-    options: { responsive: true }
-  });
-
-  const ctxHealth = document.getElementById('healthChart').getContext('2d');
-  const healthChart = new Chart(ctxHealth, {
-    type: 'doughnut',
-    data: healthData,
-    options: { responsive: true }
-  });
-
-  const ctxStaff = document.getElementById('staffChart').getContext('2d');
-  const staffChart = new Chart(ctxStaff, {
-    type: 'pie',
-    data: staffData,
-    options: { responsive: true }
-  });
-
-  const ctxEnvironment = document.getElementById('environmentChart').getContext('2d');
-  const environmentChart = new Chart(ctxEnvironment, {
-    type: 'line',
-    data: environmentData,
-    options: { responsive: true }
-  });
-
-  // Filter button event (placeholder)
   document.getElementById('filterBtn').addEventListener('click', () => {
     alert('Filter functionality to be implemented.');
   });
+</script>
+
+<!-- PDF Export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+  function downloadPDF() {
+    const report = document.getElementById('reportContent');
+    const opt = {
+      margin: 0.3,
+      filename: 'tortoise-report.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(report).save();
+  }
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
